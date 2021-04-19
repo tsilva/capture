@@ -4,9 +4,18 @@ Keeping ideas, tasks, and other thoughts in your head is not a good idea as they
 
 ## How to install
 
-### Windows 10
+### Clone and install
 
-* Install python
+* Install Python (eg: Python 3.9 from Windows Store)
 * Clone this repo
 * Run "pip install"
 * Add repo to your Windows 10 path
+
+### Fetch Gmail API client_secret.json
+
+* Create project in Google Cloud Platform
+* Add Gmail API to project
+* Click projects Credentials tab
+* Add Oauth 2.0 Client ID
+* Click download button next to created id
+* Copy file to "capture" repo folder and name it "client_secret.json"

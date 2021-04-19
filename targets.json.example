@@ -1,0 +1,10 @@
+{
+	"home" : {
+		"from" : "myemail@gmail.com",
+		"to" : "myemail@gmail.com"
+	},
+	"work" : {
+		"from" : "myemail@gmail.com",
+		"to" : "workemail@work.com"
+	}
+}
