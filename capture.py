@@ -1,8 +1,9 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
+
+"""Command line entry point for quickly sending Gmail messages."""
 
 import os
 import sys
-import time
 import json
 import base64
 import httplib2
@@ -14,58 +15,69 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
 from oauth2client.tools import run_flow
 
-# Path to the client_secret.json file downloaded from the Developer Console
-CLIENT_SECRET_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'client_secret.json')
 
-# Check https://developers.google.com/gmail/api/auth/scopes for all available scopes
-OAUTH_SCOPE = 'https://www.googleapis.com/auth/gmail.compose'
+CLIENT_SECRET_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "client_secret.json")
+OAUTH_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
+STORAGE = Storage(os.path.join(os.path.dirname(os.path.realpath(__file__)), "gmail.storage"))
 
-# Location of the credentials storage file
-STORAGE = Storage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'gmail.storage'))
 
-# Start the OAuth flow to retrieve credentials
-flow = flow_from_clientsecrets(CLIENT_SECRET_FILE, scope=OAUTH_SCOPE)
-http = httplib2.Http()
+def _build_service():
+    """Authorize the user and build a Gmail service object."""
 
-# Try to retrieve credentials from storage or run the flow to generate them
-credentials = STORAGE.get()
-if credentials is None or credentials.invalid:
-	credentials = run_flow(flow, STORAGE, http=http)
+    flow = flow_from_clientsecrets(CLIENT_SECRET_FILE, scope=OAUTH_SCOPE)
+    http = httplib2.Http()
 
-# Authorize the httplib2.Http object with our credentials
-http = credentials.authorize(http)
+    credentials = STORAGE.get()
+    if credentials is None or credentials.invalid:
+        credentials = run_flow(flow, STORAGE, http=http)
 
-# Build the Gmail service from discovery
-gmail_service = build('gmail', 'v1', http=http)
+    http = credentials.authorize(http)
+    return build("gmail", "v1", http=http)
 
-# Retrieve message, sender and receiver from args
-script_dir = os.path.dirname(os.path.realpath(__file__))
-target_path = os.path.join(script_dir, 'targets.json')
-target_file = open(target_path, "rb")
-try: target_data = target_file.read()
-finally: target_file.close()
-target = sys.argv[1]
-targets_map = json.loads(target_data)
-target_map = targets_map[target]
-from_email = target_map["from"]
-to_email = target_map["to"]
-msg = " ".join(sys.argv[2:])
 
-# create a message to send
-message = MIMEText(msg)
-message['to'] = to_email
-message['from'] = from_email
-message['subject'] = msg
-message_string = message.as_string()
-message_bytes = message_string.encode("utf-8")
-message_b64_bytes = base64.b64encode(message_bytes)
-message_b64 = message_b64_bytes.decode("utf-8")
-body = {'raw': message_b64}
+def main(argv=None):
+    """Entry point for the ``capture`` command."""
 
-# send it
-try:
-  message = (gmail_service.users().messages().send(userId="me", body=body).execute())
-  print('Message Id: %s' % message['id'])
-  print(message)
-except Exception as error:
-  print('An error occurred: %s' % error)
+    if argv is None:
+        argv = sys.argv[1:]
+
+    if len(argv) < 2:
+        print("Usage: capture <target> <message>")
+        return 1
+
+    target = argv[0]
+    msg = " ".join(argv[1:])
+
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    target_path = os.path.join(script_dir, "targets.json")
+    with open(target_path, "r", encoding="utf-8") as target_file:
+        targets_map = json.load(target_file)
+
+    target_map = targets_map[target]
+    from_email = target_map["from"]
+    to_email = target_map["to"]
+
+    gmail_service = _build_service()
+
+    message = MIMEText(msg)
+    message["to"] = to_email
+    message["from"] = from_email
+    message["subject"] = msg
+    message_string = message.as_string()
+    message_bytes = message_string.encode("utf-8")
+    message_b64_bytes = base64.b64encode(message_bytes)
+    message_b64 = message_b64_bytes.decode("utf-8")
+    body = {"raw": message_b64}
+
+    try:
+        message = (
+            gmail_service.users().messages().send(userId="me", body=body).execute()
+        )
+        print("Message Id: %s" % message["id"])
+        print(message)
+    except Exception as error:  # pragma: no cover - network call
+        print("An error occurred: %s" % error)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    sys.exit(main())
