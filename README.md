@@ -11,10 +11,14 @@ The tool uses Gmail's API to send emails to yourself or others, helping you main
 ## 🚀 Installation
 
 1. Install Python (Python 3.9+ recommended)
-2. Clone this repository
-3. Run `pip install -r requirements.txt`
-4. Add the repository to your Windows PATH
-5. Create a `targets.json` file based on the example provided
+2. Install [pipx](https://pypa.github.io/pipx/)
+3. Run `pipx install .` from the repository root or install directly from GitHub:
+
+   ```bash
+   pipx install git+https://github.com/yourusername/capture.git
+   ```
+
+4. Create a `targets.json` file based on the example provided
 
 ### Setting up Gmail API
 
