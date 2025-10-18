@@ -20,3 +20,6 @@ capture = "capture:main"
 [tool.setuptools]
 py-modules = ["capture"]
 
+[tool.setuptools.package-data]
+"*" = ["targets.json.example"]
+

@@ -10,24 +10,39 @@ The tool uses Gmail's API to send emails to yourself or others, helping you main
 
 ## 🚀 Installation
 
-1. Install Python (Python 3.9+ recommended)
+1. Install Python (Python 3.8+ recommended)
 2. Install [pipx](https://pypa.github.io/pipx/)
-3. Run `pipx install .` from the repository root or install directly from GitHub:
+3. Install Capture:
 
    ```bash
+   # From local repository
+   pipx install .
+
+   # Or directly from GitHub
    pipx install git+https://github.com/yourusername/capture.git
    ```
-
-4. Create a `targets.json` file based on the example provided
 
 ### Setting up Gmail API
 
 1. Create a project in Google Cloud Platform
 2. Enable the Gmail API for your project
 3. Go to the Credentials tab
-4. Create an OAuth 2.0 Client ID
+4. Create an OAuth 2.0 Client ID (Desktop app type)
 5. Download the credentials file
-6. Save it as `client_secret.json` in the Capture folder
+6. Save it as `client_secret.json` in your config directory:
+   - **Windows**: `%APPDATA%\capture\client_secret.json`
+   - **Linux/Mac**: `~/.config/capture/client_secret.json`
+
+### Configuration Files
+
+On first run, Capture will tell you where to place your configuration files. You need:
+
+1. **client_secret.json** - OAuth credentials from Google Cloud Console
+2. **targets.json** - Email target definitions (see example below)
+
+**Config directory locations:**
+- **Windows**: `%APPDATA%\capture\`
+- **Linux/Mac**: `~/.config/capture/`
 
 ## 🛠️ Usage
 
