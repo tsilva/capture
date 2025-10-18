@@ -7,21 +7,39 @@ import sys
 import json
 import base64
 import httplib2
+import shutil
+from pathlib import Path
 
 from email.mime.text import MIMEText
 
 from apiclient.discovery import build
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
-from oauth2client.tools import run_flow
+from oauth2client.tools import run_flow, argparser
 
 
-CLIENT_SECRET_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "client_secret.json")
+# Use user's home directory for config files
+def get_config_dir():
+    """Get or create the config directory for capture."""
+    if sys.platform == "win32":
+        config_dir = Path(os.environ.get("APPDATA", Path.home())) / "capture"
+    else:
+        config_dir = Path.home() / ".config" / "capture"
+
+    config_dir.mkdir(parents=True, exist_ok=True)
+    return config_dir
+
+
+CONFIG_DIR = get_config_dir()
+CLIENT_SECRET_FILE = str(CONFIG_DIR / "client_secret.json")
+TARGETS_FILE = str(CONFIG_DIR / "targets.json")
+STORAGE_FILE = str(CONFIG_DIR / "gmail.storage")
+
 OAUTH_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
-STORAGE = Storage(os.path.join(os.path.dirname(os.path.realpath(__file__)), "gmail.storage"))
+STORAGE = Storage(STORAGE_FILE)
 
 
-def _build_service():
+def _build_service(flags):
     """Authorize the user and build a Gmail service object."""
 
     flow = flow_from_clientsecrets(CLIENT_SECRET_FILE, scope=OAUTH_SCOPE)
@@ -29,10 +47,35 @@ def _build_service():
 
     credentials = STORAGE.get()
     if credentials is None or credentials.invalid:
-        credentials = run_flow(flow, STORAGE, http=http)
+        credentials = run_flow(flow, STORAGE, flags, http=http)
 
     http = credentials.authorize(http)
     return build("gmail", "v1", http=http)
+
+
+def _ensure_config_files():
+    """Ensure config files exist, guide user if missing."""
+    missing_files = []
+
+    if not os.path.exists(CLIENT_SECRET_FILE):
+        missing_files.append("client_secret.json")
+
+    if not os.path.exists(TARGETS_FILE):
+        missing_files.append("targets.json")
+
+    if missing_files:
+        print(f"Missing required configuration files in {CONFIG_DIR}:")
+        for f in missing_files:
+            print(f"  - {f}")
+        print("\nPlease create these files:")
+        print(f"1. Get client_secret.json from Google Cloud Console")
+        print(f"   (Enable Gmail API and create OAuth 2.0 credentials)")
+        print(f"2. Create targets.json with email mappings:")
+        print('   {"home": {"from": "your@gmail.com", "to": "your@gmail.com"}}')
+        print(f"\nConfig directory: {CONFIG_DIR}")
+        return False
+
+    return True
 
 
 def main(argv=None):
@@ -41,23 +84,28 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
 
-    if len(argv) < 2:
+    # Check config files first
+    if not _ensure_config_files():
+        return 1
+
+    # Parse oauth2client flags first
+    flags, remaining = argparser.parse_known_args(argv)
+
+    if len(remaining) < 2:
         print("Usage: capture <target> <message>")
         return 1
 
-    target = argv[0]
-    msg = " ".join(argv[1:])
+    target = remaining[0]
+    msg = " ".join(remaining[1:])
 
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    target_path = os.path.join(script_dir, "targets.json")
-    with open(target_path, "r", encoding="utf-8") as target_file:
+    with open(TARGETS_FILE, "r", encoding="utf-8") as target_file:
         targets_map = json.load(target_file)
 
     target_map = targets_map[target]
     from_email = target_map["from"]
     to_email = target_map["to"]
 
-    gmail_service = _build_service()
+    gmail_service = _build_service(flags)
 
     message = MIMEText(msg)
     message["to"] = to_email
