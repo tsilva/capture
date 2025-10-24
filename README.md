@@ -10,16 +10,15 @@ The tool uses Gmail's API to send emails to yourself or others, helping you main
 
 ## 🚀 Installation
 
-1. Install Python (Python 3.8+ recommended)
-2. Install [pipx](https://pypa.github.io/pipx/)
-3. Install Capture:
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
+2. Install Capture:
 
    ```bash
    # From local repository
-   pipx install .
+   uv tool install .
 
    # Or directly from GitHub
-   pipx install git+https://github.com/yourusername/capture.git
+   uv tool install git+https://github.com/yourusername/capture.git
    ```
 
 ### Setting up Gmail API
