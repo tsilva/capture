@@ -9,9 +9,9 @@ description = "Simple CLI tool to quickly capture thoughts to Gmail"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-    "httplib2==0.19.1",
-    "oauth2client==4.1.3",
-    "google-api-python-client==2.2.0"
+    "httplib2>=0.20.0",
+    "oauth2client>=4.1.3",
+    "google-api-python-client>=2.2.0"
 ]
 
 [project.scripts]
