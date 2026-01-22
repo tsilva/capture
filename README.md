@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="logo.png" alt="capture" width="240"/>
+  <img src="logo.png" alt="capture" width="512"/>
 
   # capture
 
@@ -7,7 +7,7 @@
   [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
   [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)](https://github.com/tsilva/capture)
 
-  **Clear your mind instantly — capture thoughts to Gmail with a single command**
+  **🧠 Clear your mind instantly — capture thoughts to Gmail with a single command**
 
   [Quick Start](#quick-start) · [Installation](#installation) · [Configuration](#configuration)
 </div>
@@ -20,11 +20,11 @@ Capture implements the **Getting Things Done (GTD)** methodology by letting you 
 
 ## Features
 
-- **Instant capture** — Send notes to Gmail in under 2 seconds
-- **Multiple targets** — Route messages to different inboxes (home, work, etc.)
-- **Secure OAuth2** — Gmail API authentication, no passwords stored
-- **Cross-platform** — Works on macOS, Linux, and Windows
-- **Hotkey ready** — Alfred (macOS) and AutoHotkey (Windows) integrations included
+- **⚡ Instant capture** — Send notes to Gmail in under 2 seconds
+- **🎯 Multiple targets** — Route messages to different inboxes (home, work, etc.)
+- **🔒 Secure OAuth2** — Gmail API authentication, no passwords stored
+- **💻 Cross-platform** — Works on macOS, Linux, and Windows
+- **⌨️ Hotkey ready** — Alfred (macOS) and AutoHotkey (Windows) integrations included
 
 ## Quick Start
 
