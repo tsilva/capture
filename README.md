@@ -1,68 +1,63 @@
-<p align="center">
-  <img src="logo.png" alt="capture logo" width="128">
-</p>
+<div align="center">
+  <img src="logo.png" alt="capture" width="240"/>
 
-<h1 align="center">capture</h1>
+  # capture
 
-<p align="center">
-  <strong>A CLI tool to quickly capture thoughts and ideas directly to Gmail</strong>
-</p>
+  [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
+  [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+  [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)](https://github.com/tsilva/capture)
 
-<p align="center">
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python 3.8+"></a>
-  <a href="https://github.com/tsilva/capture"><img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform"></a>
-</p>
+  **Clear your mind instantly — capture thoughts to Gmail with a single command**
+
+  [Quick Start](#quick-start) · [Installation](#installation) · [Configuration](#configuration)
+</div>
 
 ---
 
 ## Overview
 
-Capture helps you implement the **Getting Things Done (GTD)** methodology by providing a quick way to dump thoughts, tasks, and ideas from your mind into Gmail. Instead of keeping these thoughts in your head where they constantly demand attention, Capture lets you quickly send them to your inbox for later review and processing.
+Capture implements the **Getting Things Done (GTD)** methodology by letting you dump thoughts, tasks, and ideas from your mind into Gmail instantly. Stop letting random thoughts interrupt your focus — capture them in seconds and process them later.
 
 ## Features
 
-- Send quick notes to yourself or others via Gmail
-- Define multiple email targets for different contexts (home, work, etc.)
-- OAuth2 authentication with Gmail API
-- Cross-platform support (macOS, Linux, Windows)
+- **Instant capture** — Send notes to Gmail in under 2 seconds
+- **Multiple targets** — Route messages to different inboxes (home, work, etc.)
+- **Secure OAuth2** — Gmail API authentication, no passwords stored
+- **Cross-platform** — Works on macOS, Linux, and Windows
+- **Hotkey ready** — Alfred (macOS) and AutoHotkey (Windows) integrations included
 
 ## Quick Start
 
 ```bash
-# Install with uv
+# Install
 uv tool install git+https://github.com/tsilva/capture.git
 
-# Send a quick thought
-capture "home" "Buy groceries after work"
+# Capture a thought
+capture home "Buy groceries after work"
 ```
 
 ## Installation
 
 ### Prerequisites
 
+- Python 3.8+
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) package manager
 - Google Cloud project with Gmail API enabled
 
 ### Install
 
-```bash
-# From GitHub
-uv tool install git+https://github.com/tsilva/capture.git
-
-# Or from local clone
-git clone https://github.com/tsilva/capture.git
-cd capture
-uv tool install .
-```
+| Method | Command |
+|--------|---------|
+| From GitHub | `uv tool install git+https://github.com/tsilva/capture.git` |
+| Local clone | `git clone https://github.com/tsilva/capture.git && cd capture && uv tool install .` |
 
 ### Gmail API Setup
 
 1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
-2. Enable the **Gmail API** for your project
+2. Enable the **Gmail API**
 3. Go to **Credentials** → **Create Credentials** → **OAuth 2.0 Client ID**
 4. Select **Desktop app** as application type
-5. Download the credentials file
-6. Save it as `client_secret.json` in your config directory
+5. Download and save as `client_secret.json` in your [config directory](#config-directory)
 
 ## Configuration
 
@@ -70,23 +65,23 @@ uv tool install .
 
 | Platform | Location |
 |----------|----------|
-| macOS/Linux | `~/.config/capture/` |
+| macOS / Linux | `~/.config/capture/` |
 | Windows | `%APPDATA%\capture\` |
 
 ### Required Files
 
 **client_secret.json** — OAuth credentials from Google Cloud Console
 
-**targets.json** — Email target definitions:
+**targets.json** — Email routing configuration:
 
 ```json
 {
   "home": {
-    "from": "your@gmail.com",
-    "to": "your@gmail.com"
+    "from": "you@gmail.com",
+    "to": "you@gmail.com"
   },
   "work": {
-    "from": "your@gmail.com",
+    "from": "you@gmail.com",
     "to": "work@company.com"
   }
 }
@@ -100,27 +95,50 @@ capture <target> <message>
 
 | Argument | Description |
 |----------|-------------|
-| `target` | Key from your `targets.json` file |
+| `target` | Key from `targets.json` (e.g., `home`, `work`) |
 | `message` | The thought or note to capture |
 
 ### Examples
 
 ```bash
-# Capture a personal task
-capture "home" "Call dentist to schedule appointment"
+# Personal reminder
+capture home "Call dentist to schedule appointment"
 
-# Send a work reminder
-capture "work" "Review PR #42 before standup"
+# Work task
+capture work "Review PR #42 before standup"
+
+# Quick idea
+capture home "Blog post idea: productivity tips for developers"
 ```
 
-## AutoHotkey Integration (Windows)
+## Hotkey Integration
 
-For instant capture with a hotkey:
+### Alfred (macOS)
+
+1. Copy the `alfred/` folder to Alfred's workflow directory
+2. Press **Cmd+Shift+I** to open capture prompt
+3. Type your thought and press Enter
+
+### AutoHotkey (Windows)
 
 1. Install [AutoHotkey](https://www.autohotkey.com/)
 2. Copy `autohotkey/capture-home.ahk.example` to `capture-home.ahk`
-3. Customize the target and run the script
+3. Edit the target if needed and run the script
 4. Press **F1** to capture thoughts instantly
+
+## Troubleshooting
+
+### First Run Authentication
+
+On first use, a browser window opens for Gmail authorization. Grant access to allow capture to send emails on your behalf.
+
+### Missing Config Files
+
+If you see "Missing required configuration files":
+
+1. Ensure `client_secret.json` exists in your config directory
+2. Create `targets.json` with at least one target defined
+3. Run `capture` again to authenticate
 
 ---
 
