@@ -24,7 +24,7 @@ Capture implements the **Getting Things Done (GTD)** methodology by letting you 
 - **🎯 Multiple targets** — Route messages to different inboxes (home, work, etc.)
 - **🔒 Secure OAuth2** — Gmail API authentication, no passwords stored
 - **💻 Cross-platform** — Works on macOS, Linux, and Windows
-- **⌨️ Hotkey ready** — Alfred (macOS) and AutoHotkey (Windows) integrations included
+- **⌨️ Hotkey ready** — AutoHotkey (Windows) integration included
 
 ## Quick Start
 
@@ -113,12 +113,6 @@ capture home "Blog post idea: productivity tips for developers"
 
 ## Hotkey Integration
 
-### Alfred (macOS)
-
-1. Copy the `alfred/` folder to Alfred's workflow directory
-2. Press **Cmd+Shift+I** to open capture prompt
-3. Type your thought and press Enter
-
 ### AutoHotkey (Windows)
 
 1. Install [AutoHotkey](https://www.autohotkey.com/)
@@ -145,3 +139,8 @@ If you see "Missing required configuration files":
 <p align="center">
   Built with Python and Gmail API
 </p>
+
+
+## License
+
+MIT
