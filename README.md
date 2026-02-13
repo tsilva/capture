@@ -7,7 +7,7 @@
   [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
   [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)](https://github.com/tsilva/capture)
 
-  **🧠 Clear your mind instantly — capture thoughts to Gmail with a single command**
+  **🧠 Clear your mind instantly — capture thoughts to Gmail with a single command ⚡**
 
   [Quick Start](#quick-start) · [Installation](#installation) · [Configuration](#configuration)
 </div>
