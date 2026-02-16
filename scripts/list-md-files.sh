@@ -4,7 +4,7 @@
 
 REPOS_DIR="$HOME/repos/tsilva"
 
-items='{"title":"@email","subtitle":"Capture a quick idea","arg":"@email","match":"email idea"}'
+items='{"title":"gmail","subtitle":"Capture a quick idea","arg":"gmail","match":"gmail idea","icon":{"path":"'$HOME'/.config/capture/gmail.png"}}'
 for repo_dir in "$REPOS_DIR"/*/ "$REPOS_DIR"/.[!.]*/; do
     [ -d "$repo_dir/.git" ] || continue
     repo_name="$(basename "$repo_dir")"

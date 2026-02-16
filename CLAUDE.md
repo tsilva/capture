@@ -46,7 +46,7 @@ This is a single-module Python CLI application:
 
 **Entry point:** `capture:main` function, registered via pyproject.toml `[project.scripts]`
 
-**Alfred Workflow (MD Note Capture):** `install.sh` copies helper scripts to `~/.config/capture/` and installs an Alfred workflow. The `list-md-files.sh` script scans `~/repos/tsilva/` for git repos and outputs Alfred Script Filter JSON with an `@email` item for quick idea capture. `prepend-to-file.sh` shows an osascript dialog and prepends text to `<notes-dir>/<repo-name>.md` (configured via `notes-dir.txt`). For `@email`, it runs `capture home "<text>"` via the CLI.
+**Alfred Workflow (MD Note Capture):** `install.sh` copies helper scripts to `~/.config/capture/` and installs an Alfred workflow. The `list-md-files.sh` script scans `~/repos/tsilva/` for git repos and outputs Alfred Script Filter JSON with a `gmail` item (with Gmail icon) for quick idea capture. `prepend-to-file.sh` shows an osascript dialog and prepends text to `<notes-dir>/<repo-name>.md` (configured via `notes-dir.txt`). For `gmail`, it runs `capture home "<text>"` via the CLI.
 
 **Notes config:** `~/.config/capture/notes-dir.txt` - path to the directory where repo notes are stored
 

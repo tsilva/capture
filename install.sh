@@ -55,6 +55,8 @@ for script in list-md-files.sh prepend-to-file.sh alfred-search.sh; do
     chmod +x "$CAPTURE_CONFIG_DIR/$script"
     echo -e "  ${GREEN}✓${RESET} Installed ${DIM}${script}${RESET}"
 done
+cp "$SCRIPT_DIR/icons/gmail.png" "$CAPTURE_CONFIG_DIR/gmail.png"
+echo -e "  ${GREEN}✓${RESET} Installed ${DIM}gmail.png${RESET}"
 echo
 
 # [4/4] Handle notes-dir.txt & Alfred
@@ -84,9 +86,9 @@ echo -e "${BGREEN}┃   Installation complete! ✓     ┃${RESET}"
 echo -e "${BGREEN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${RESET}"
 echo
 echo -e "${BWHITE}Usage:${RESET}"
-echo -e "  Type ${BCYAN}c${RESET} in Alfred to list repos and @email"
+echo -e "  Type ${BCYAN}c${RESET} in Alfred to list repos and gmail"
 echo -e "  Select a repo to add a note to ${DIM}<notes-dir>/<repo>.md${RESET}"
-echo -e "  Select ${BCYAN}@email${RESET} to capture a quick idea via Gmail"
+echo -e "  Select ${BCYAN}gmail${RESET} to capture a quick idea via Gmail"
 echo
 echo -e "${BWHITE}Configuration:${RESET}"
 echo -e "  ${DIM}${CAPTURE_CONFIG_DIR}/notes-dir.txt${RESET}  Notes folder path"

@@ -9,8 +9,8 @@ if [ -z "$REPO_NAME" ]; then
     exit 0
 fi
 
-# Handle @email: show dialog and run capture CLI
-if [ "$REPO_NAME" = "@email" ]; then
+# Handle gmail: show dialog and run capture CLI
+if [ "$REPO_NAME" = "gmail" ]; then
     IDEA=$(osascript -e "
         try
             set result to display dialog \"Capture idea:\" default answer \"\" buttons {\"Cancel\", \"Capture\"} default button \"Capture\" with title \"Quick Capture\"
