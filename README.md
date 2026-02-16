@@ -24,7 +24,8 @@ Capture implements the **Getting Things Done (GTD)** methodology by letting you 
 - **🎯 Multiple targets** — Route messages to different inboxes (home, work, etc.)
 - **🔒 Secure OAuth2** — Gmail API authentication, no passwords stored
 - **💻 Cross-platform** — Works on macOS, Linux, and Windows
-- **⌨️ Hotkey ready** — AutoHotkey (Windows) integration included
+- **📝 Alfred workflow** — Add notes to markdown files and capture ideas with `c` keyword
+- **⌨️ Hotkey ready** — AutoHotkey (Windows) and Alfred (macOS) integration included
 
 ## Quick Start
 
@@ -109,6 +110,37 @@ capture work "Review PR #42 before standup"
 
 # Quick idea
 capture home "Blog post idea: productivity tips for developers"
+```
+
+## Alfred Integration (macOS)
+
+### MD Note Capture
+
+An Alfred workflow for adding notes to markdown files and quick idea capture.
+
+```bash
+# Install the workflow and helper scripts
+./install.sh
+```
+
+Type `c` in Alfred to:
+- Select a repo to add a note to `<notes-dir>/<repo-name>.md`
+- Select `@email` to capture a quick idea via Gmail
+
+#### Notes Directory
+
+Edit `~/.config/capture/notes-dir.txt` to set the folder where repo notes are stored:
+
+```
+~/Documents/Notes
+```
+
+#### AeroSpace Keybinding
+
+If you use [AeroSpace](https://github.com/nikitabobko/AeroSpace), add this to `~/.aerospace.toml` for an `alt+c` hotkey:
+
+```toml
+alt-c = 'exec-and-forget ~/.config/capture/alfred-search.sh c'
 ```
 
 ## Hotkey Integration

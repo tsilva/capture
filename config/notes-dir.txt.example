@@ -1,0 +1,6 @@
+# Path to the directory containing your markdown notes (one path per line)
+# The first non-comment, non-empty line is used as the notes folder
+# Use ~ for home directory (it will be expanded automatically)
+#
+# Example:
+# ~/Documents/Notes
