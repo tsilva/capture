@@ -6,16 +6,14 @@ import os
 import sys
 import json
 import base64
-import httplib2
-import shutil
 from pathlib import Path
 
 from email.mime.text import MIMEText
 
-from apiclient.discovery import build
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.file import Storage
-from oauth2client.tools import run_flow, argparser
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 
 
 # Use user's home directory for config files
@@ -33,24 +31,27 @@ def get_config_dir():
 CONFIG_DIR = get_config_dir()
 CLIENT_SECRET_FILE = str(CONFIG_DIR / "client_secret.json")
 TARGETS_FILE = str(CONFIG_DIR / "targets.json")
-STORAGE_FILE = str(CONFIG_DIR / "gmail.storage")
-
 OAUTH_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
-STORAGE = Storage(STORAGE_FILE)
+CACHE_DIR = Path.home() / ".capture"
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
+TOKEN_FILE = str(CACHE_DIR / "token.json")
+SCOPES = [OAUTH_SCOPE]
 
 
-def _build_service(flags):
+def _build_service():
     """Authorize the user and build a Gmail service object."""
-
-    flow = flow_from_clientsecrets(CLIENT_SECRET_FILE, scope=OAUTH_SCOPE)
-    http = httplib2.Http()
-
-    credentials = STORAGE.get()
-    if credentials is None or credentials.invalid:
-        credentials = run_flow(flow, STORAGE, flags, http=http)
-
-    http = credentials.authorize(http)
-    return build("gmail", "v1", http=http)
+    creds = None
+    if os.path.exists(TOKEN_FILE):
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open(TOKEN_FILE, "w") as token:
+            token.write(creds.to_json())
+    return build("gmail", "v1", credentials=creds)
 
 
 def _ensure_config_files():
@@ -88,8 +89,7 @@ def main(argv=None):
     if not _ensure_config_files():
         return 1
 
-    # Parse oauth2client flags first
-    flags, remaining = argparser.parse_known_args(argv)
+    remaining = argv
 
     if len(remaining) < 2:
         print("Usage: capture <target> <message>")
@@ -105,7 +105,7 @@ def main(argv=None):
     from_email = target_map["from"]
     to_email = target_map["to"]
 
-    gmail_service = _build_service(flags)
+    gmail_service = _build_service()
 
     message = MIMEText(msg)
     message["to"] = to_email
