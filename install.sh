@@ -93,9 +93,4 @@ echo
 echo -e "${BWHITE}Configuration:${RESET}"
 echo -e "  ${DIM}${CAPTURE_CONFIG_DIR}/notes-dir.txt${RESET}  Notes folder path"
 
-# Suggest keybinding if aerospace is installed
-if [ -f "$HOME/.aerospace.toml" ]; then
-    echo
-    echo -e "${BWHITE}Tip:${RESET} Add this to ${DIM}~/.aerospace.toml${RESET} for an ${BCYAN}alt+c${RESET} keybinding:"
-    echo -e "  ${DIM}alt-c = 'exec-and-forget ~/.config/capture/alfred-search.sh c'${RESET}"
-fi
+
