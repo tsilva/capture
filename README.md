@@ -135,13 +135,13 @@ Edit `~/.config/capture/notes-dir.txt` to set the folder where repo notes are st
 ~/Documents/Notes
 ```
 
-#### AeroSpace Keybinding
+#### Window Management with AeroSpace
 
-If you use [AeroSpace](https://github.com/nikitabobko/AeroSpace), add this to `~/.aerospace.toml` for an `alt+c` hotkey:
-
-```toml
-alt-c = 'exec-and-forget ~/.config/capture/alfred-search.sh c'
-```
+For the best experience, use [aerospace-setup](https://github.com/tsilva/aerospace-setup) to manage your windows. It includes:
+- Automatic workspace organization for Cursor projects
+- `alt+p` to switch between projects
+- `alt+s` to organize windows by priority
+- Optional `alt+c` keybinding for instant capture (auto-detected during install)
 
 ## Hotkey Integration
 
