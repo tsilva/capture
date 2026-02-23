@@ -16,6 +16,8 @@
 
 ## Overview
 
+[![CI](https://github.com/tsilva/capture/actions/workflows/release.yml/badge.svg)](https://github.com/tsilva/capture/actions/workflows/release.yml)
+
 Capture implements the **Getting Things Done (GTD)** methodology by letting you dump thoughts, tasks, and ideas from your mind into Gmail instantly. Stop letting random thoughts interrupt your focus — capture them in seconds and process them later.
 
 ## Features

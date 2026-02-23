@@ -22,3 +22,8 @@ py-modules = ["capture"]
 [tool.setuptools.package-data]
 "*" = ["targets.json.example"]
 
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
