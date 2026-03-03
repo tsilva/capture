@@ -96,7 +96,7 @@ else
         subtitle="${rest%%|*}"
         icon="${rest#*|}"
 
-        if [[ -n "$QUERY" ]] && [[ "$name" != "$QUERY"* ]]; then
+        if [[ -n "$QUERY" ]] && [[ "$name" != *"$QUERY"* ]]; then
             continue
         fi
 
