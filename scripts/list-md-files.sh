@@ -6,6 +6,7 @@
 #   "<target> msg" → actionable item (arg = "target:::msg")
 
 QUERY="${1:-}"
+shopt -s nocasematch
 CONFIG_FILE="$HOME/.capture/config.json"
 NOTES_DIR=""
 REPOS_DIR=""
@@ -60,19 +61,15 @@ fi
 MATCHED_TARGET=""
 MATCHED_ICON=""
 MESSAGE=""
-LOWER_QUERY=$(printf '%s' "$QUERY" | tr '[:upper:]' '[:lower:]')
 
 for entry in "${TARGETS[@]}"; do
     name="${entry%%|*}"
     rest="${entry#*|}"
     icon="${rest#*|}"
-    lower_name=$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]')
-    prefix="${lower_name} "
-    prefix_len=${#prefix}
-    if [ ${#LOWER_QUERY} -ge $prefix_len ] && [ "${LOWER_QUERY:0:$prefix_len}" = "$prefix" ]; then
+    if [[ "$QUERY" == "$name "* ]]; then
         MATCHED_TARGET="$name"
         MATCHED_ICON="$icon"
-        MESSAGE="${QUERY:$prefix_len}"
+        MESSAGE="${QUERY:${#name}+1}"
         break
     fi
 done
@@ -99,8 +96,7 @@ else
         subtitle="${rest%%|*}"
         icon="${rest#*|}"
 
-        lower_name=$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]')
-        if [ -n "$LOWER_QUERY" ] && [ "${lower_name:0:${#LOWER_QUERY}}" != "$LOWER_QUERY" ]; then
+        if [[ -n "$QUERY" ]] && [[ "$name" != "$QUERY"* ]]; then
             continue
         fi
 
