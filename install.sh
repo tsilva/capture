@@ -21,7 +21,7 @@ else
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CAPTURE_CONFIG_DIR="$HOME/.config/capture"
+CAPTURE_CONFIG_DIR="$HOME/.capture"
 ALFRED_WORKFLOWS_DIR="$HOME/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows"
 
 # Banner
@@ -70,12 +70,11 @@ validate_repos_dir() {
     [ -d "$dir" ] && [ -n "$(find "$dir" -maxdepth 2 -name ".git" -print -quit)" ]
 }
 
-# Prompt helper
+# Prompt helper for paths
 prompt_path() {
-    local config_file="$1"
-    local prompt_text="$2"
-    local validate_fn="$3"
-    local err_msg="$4"
+    local prompt_text="$1"
+    local validate_fn="$2"
+    local err_msg="$3"
     local input expanded
 
     while true; do
@@ -83,30 +82,48 @@ prompt_path() {
         read -r input
         expanded="${input/#\~/$HOME}"
         if $validate_fn "$expanded"; then
-            echo "$expanded" > "$config_file"
-            echo -e "  ${GREEN}✓${RESET} Saved to ${DIM}$(basename $config_file)${RESET}"
+            echo "$expanded"
             break
         else
-            echo -e "  ${RED}✗${RESET} $err_msg"
+            echo -e "  ${RED}✗${RESET} $err_msg" >&2
         fi
     done
 }
 
-# [4/4] Handle notes-dir.txt & Alfred
+# [4/4] Handle config.json
 echo -e "${BWHITE}[4/4] Setting up config...${RESET}"
-if [ -f "$CAPTURE_CONFIG_DIR/notes-dir.txt" ]; then
-    echo -e "  ${GREEN}✓${RESET} Existing ${DIM}notes-dir.txt${RESET} found ${DIM}(keeping your customizations)${RESET}"
-elif [ -f "$HOME/.config/aerospace/notes-dir.txt" ]; then
-    cp "$HOME/.config/aerospace/notes-dir.txt" "$CAPTURE_CONFIG_DIR/notes-dir.txt"
-    echo -e "  ${GREEN}✓${RESET} Migrated ${DIM}notes-dir.txt${RESET} from ${DIM}~/.config/aerospace/${RESET}"
-else
-    prompt_path "$CAPTURE_CONFIG_DIR/notes-dir.txt" "Enter path to your notes directory: " "validate_notes_dir" "Directory doesn't exist or contains no .md files"
-fi
+if [ -f "$CAPTURE_CONFIG_DIR/config.json" ]; then
+    echo -e "  ${GREEN}✓${RESET} Existing ${DIM}config.json${RESET} found ${DIM}(keeping your customizations)${RESET}"
+elif [ -f "$HOME/.config/capture/notes-dir.txt" ] || [ -f "$HOME/.config/capture/repos-dir.txt" ]; then
+    # Migrate from old config files
+    NOTES_DIR=""
+    REPOS_DIR=""
 
-if [ -f "$CAPTURE_CONFIG_DIR/repos-dir.txt" ]; then
-    echo -e "  ${GREEN}✓${RESET} Existing ${DIM}repos-dir.txt${RESET} found ${DIM}(keeping your customizations)${RESET}"
+    if [ -f "$HOME/.config/capture/notes-dir.txt" ]; then
+        NOTES_DIR=$(grep -v "^#" "$HOME/.config/capture/notes-dir.txt" | grep -v "^$" | head -1)
+    fi
+    if [ -f "$HOME/.config/capture/repos-dir.txt" ]; then
+        REPOS_DIR=$(grep -v "^#" "$HOME/.config/capture/repos-dir.txt" | grep -v "^$" | head -1)
+    fi
+
+    cat > "$CAPTURE_CONFIG_DIR/config.json" <<EOF
+{
+  "notes_dir": "$NOTES_DIR",
+  "repos_dir": "$REPOS_DIR"
+}
+EOF
+    echo -e "  ${GREEN}✓${RESET} Migrated config to ${DIM}config.json${RESET}"
 else
-    prompt_path "$CAPTURE_CONFIG_DIR/repos-dir.txt" "Enter path to your repos directory: " "validate_repos_dir" "Directory doesn't exist or contains no git repos"
+    NOTES_DIR=$(prompt_path "Enter path to your notes directory: " "validate_notes_dir" "Directory doesn't exist or contains no .md files")
+    REPOS_DIR=$(prompt_path "Enter path to your repos directory: " "validate_repos_dir" "Directory doesn't exist or contains no git repos")
+
+    cat > "$CAPTURE_CONFIG_DIR/config.json" <<EOF
+{
+  "notes_dir": "$NOTES_DIR",
+  "repos_dir": "$REPOS_DIR"
+}
+EOF
+    echo -e "  ${GREEN}✓${RESET} Created ${DIM}config.json${RESET}"
 fi
 
 if [ -n "$ALFRED_WORKFLOWS_DIR" ]; then

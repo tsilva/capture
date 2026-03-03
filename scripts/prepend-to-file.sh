@@ -1,7 +1,7 @@
 #!/bin/bash
 # Show a text input dialog and prepend the entered text to a markdown note
 # Usage: prepend-to-file.sh <note-name>
-# Reads notes directory from ~/.config/capture/notes-dir.txt
+# Reads notes directory from ~/.capture/config.json
 # Creates <notes-dir>/<note-name>.md if it doesn't exist
 
 NOTE_NAME="$1"
@@ -25,28 +25,16 @@ if [ "$NOTE_NAME" = "gmail" ]; then
     exit 0
 fi
 
-CONFIG_FILE="$HOME/.config/capture/notes-dir.txt"
+CONFIG_FILE="$HOME/.capture/config.json"
 
-# Read notes directory from config (skip comments and empty lines)
+# Read notes directory from config.json
 NOTES_DIR=""
 if [ -f "$CONFIG_FILE" ]; then
-    while IFS= read -r line || [ -n "$line" ]; do
-        case "$line" in
-            \#*|"") continue ;;
-        esac
-        NOTES_DIR="$line"
-        break
-    done < "$CONFIG_FILE"
+    NOTES_DIR=$(grep -o '"notes_dir": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
 fi
 
-# Expand ~ manually
-case "$NOTES_DIR" in
-    "~/"*) NOTES_DIR="$HOME/${NOTES_DIR#\~/}" ;;
-    "~") NOTES_DIR="$HOME" ;;
-esac
-
 if [ -z "$NOTES_DIR" ] || [ ! -d "$NOTES_DIR" ]; then
-    osascript -e 'display dialog "Notes directory not configured.\nEdit ~/.config/capture/notes-dir.txt" buttons {"OK"} default button "OK" with title "Error" with icon stop' 2>/dev/null
+    osascript -e 'display dialog "Notes directory not configured.\nEdit ~/.capture/config.json" buttons {"OK"} default button "OK" with title "Error" with icon stop' 2>/dev/null
     exit 0
 fi
 

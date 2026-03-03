@@ -38,19 +38,24 @@ This is a single-module Python CLI application:
   - Config file management (client_secret.json, targets.json, gmail.storage)
   - Email construction and sending
 
-**Config directory:** `~/.config/capture/` (Linux/Mac) or `%APPDATA%\capture\` (Windows)
+**Config directory:** `~/.capture/` (all platforms)
+
+**Config file:** `~/.capture/config.json` — consolidated configuration with structure:
+```json
+{
+  "notes_dir": "/path/to/notes",
+  "repos_dir": "/path/to/repos"
+}
+```
 
 **Required config files:**
 - `client_secret.json` - OAuth credentials from Google Cloud Console
 - `targets.json` - Email target mappings (e.g., `{"home": {"from": "...", "to": "..."}}`)
+- `config.json` - Notes and repos directory paths (created interactively by `install.sh`)
 
 **Entry point:** `capture:main` function, registered via pyproject.toml `[project.scripts]`
 
-**Alfred Workflow (MD Note Capture):** `install.sh` copies helper scripts to `~/.config/capture/` and installs an Alfred workflow. The `list-md-files.sh` script scans the notes directory for `.md` files and outputs Alfred Script Filter JSON with a `gmail` item (with Gmail icon) for quick idea capture. Files prefixed with `git-` get their icon from the matching repo's `logo.png` (using the repos dir from `repos-dir.txt`). `prepend-to-file.sh` shows an osascript dialog and prepends text to `<notes-dir>/<note-name>.md` (configured via `notes-dir.txt`). For `gmail`, it runs `capture home "<text>"` via the CLI.
-
-**Notes config:** `~/.config/capture/notes-dir.txt` - path to the directory where notes are stored
-
-**Repos config:** `~/.config/capture/repos-dir.txt` - path to the directory containing git repos (used for note icons)
+**Alfred Workflow (MD Note Capture):** `install.sh` copies helper scripts to `~/.capture/` and installs an Alfred workflow. The `list-md-files.sh` script scans the notes directory (from config.json) for `.md` files and outputs Alfred Script Filter JSON with a `gmail` item (with Gmail icon) for quick idea capture. Files prefixed with `git-` get their icon from the matching repo's `logo.png` (using repos_dir from config.json). `prepend-to-file.sh` shows an osascript dialog and prepends text to `<notes_dir>/<note-name>.md` (configured via config.json). For `gmail`, it runs `capture home "<text>"` via the CLI.
 
 ## Dependencies
 

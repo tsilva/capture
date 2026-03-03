@@ -16,25 +16,15 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 
-# Use user's home directory for config files
-def get_config_dir():
-    """Get or create the config directory for capture."""
-    if sys.platform == "win32":
-        config_dir = Path(os.environ.get("APPDATA", Path.home())) / "capture"
-    else:
-        config_dir = Path.home() / ".config" / "capture"
+# Use ~/.capture for all config and cache files
+CONFIG_DIR = Path.home() / ".capture"
+CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
-    config_dir.mkdir(parents=True, exist_ok=True)
-    return config_dir
-
-
-CONFIG_DIR = get_config_dir()
 CLIENT_SECRET_FILE = str(CONFIG_DIR / "client_secret.json")
 TARGETS_FILE = str(CONFIG_DIR / "targets.json")
+CONFIG_FILE = str(CONFIG_DIR / "config.json")
+TOKEN_FILE = str(CONFIG_DIR / "token.json")
 OAUTH_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
-CACHE_DIR = Path.home() / ".capture"
-CACHE_DIR.mkdir(parents=True, exist_ok=True)
-TOKEN_FILE = str(CACHE_DIR / "token.json")
 SCOPES = [OAUTH_SCOPE]
 
 

@@ -68,8 +68,7 @@ capture home "Buy groceries after work"
 
 | Platform | Location |
 |----------|----------|
-| macOS / Linux | `~/.config/capture/` |
-| Windows | `%APPDATA%\capture\` |
+| macOS / Linux / Windows | `~/.capture/` |
 
 ### Required Files
 
@@ -126,16 +125,22 @@ An Alfred workflow for adding notes to markdown files and quick idea capture.
 ```
 
 Type `c` in Alfred to:
-- Select a repo to add a note to `<notes-dir>/<repo-name>.md`
-- Select `@email` to capture a quick idea via Gmail
+- Select a note file to append text to `<notes_dir>/<note-name>.md`
+- Select `gmail` to capture a quick idea via Gmail
 
-#### Notes Directory
+#### Configuration
 
-Edit `~/.config/capture/notes-dir.txt` to set the folder where repo notes are stored:
+Configuration is handled by `~/.capture/config.json`, which is created interactively during `./install.sh`:
 
+```json
+{
+  "notes_dir": "~/Documents/Notes",
+  "repos_dir": "~/repos"
+}
 ```
-~/Documents/Notes
-```
+
+**notes_dir** — Directory where markdown notes are stored (must contain `.md` files)
+**repos_dir** — Directory containing git repositories (used for note icons)
 
 #### Window Management with AeroSpace
 
