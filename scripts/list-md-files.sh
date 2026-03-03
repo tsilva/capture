@@ -2,50 +2,22 @@
 # List all .md files from the notes directory for Alfred Script Filter
 # Outputs note names for selection; prepend-to-file.sh handles the rest
 
-# --- Read notes dir from config ---
+CONFIG_FILE="$HOME/.capture/config.json"
 NOTES_DIR=""
-NOTES_CONFIG="$HOME/.config/capture/notes-dir.txt"
-if [ -f "$NOTES_CONFIG" ]; then
-    while IFS= read -r line || [ -n "$line" ]; do
-        case "$line" in
-            \#*|"") continue ;;
-        esac
-        NOTES_DIR="$line"
-        break
-    done < "$NOTES_CONFIG"
-fi
-
-# Expand ~
-case "$NOTES_DIR" in
-    "~/"*) NOTES_DIR="$HOME/${NOTES_DIR#\~/}" ;;
-    "~") NOTES_DIR="$HOME" ;;
-esac
-
-# --- Read repos dir from config ---
 REPOS_DIR=""
-REPOS_CONFIG="$HOME/.config/capture/repos-dir.txt"
-if [ -f "$REPOS_CONFIG" ]; then
-    while IFS= read -r line || [ -n "$line" ]; do
-        case "$line" in
-            \#*|"") continue ;;
-        esac
-        REPOS_DIR="$line"
-        break
-    done < "$REPOS_CONFIG"
-fi
 
-# Expand ~
-case "$REPOS_DIR" in
-    "~/"*) REPOS_DIR="$HOME/${REPOS_DIR#\~/}" ;;
-    "~") REPOS_DIR="$HOME" ;;
-esac
+# Read config.json
+if [ -f "$CONFIG_FILE" ]; then
+    NOTES_DIR=$(grep -o '"notes_dir": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
+    REPOS_DIR=$(grep -o '"repos_dir": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
+fi
 
 # --- Build Alfred items ---
-items='{"title":"gmail","subtitle":"Capture a quick idea","arg":"gmail","match":"gmail idea","icon":{"path":"'$HOME'/.config/capture/gmail.png"}}'
+items='{"title":"gmail","subtitle":"Capture a quick idea","arg":"gmail","match":"gmail idea","icon":{"path":"'$HOME'/.capture/gmail.png"}}'
 
 # If notes dir is not configured or missing, show gmail + error
 if [ -z "$NOTES_DIR" ] || [ ! -d "$NOTES_DIR" ]; then
-    items="${items},{\"title\":\"Notes dir not configured\",\"subtitle\":\"Edit ~/.config/capture/notes-dir.txt\",\"valid\":false}"
+    items="${items},{\"title\":\"Notes dir not configured\",\"subtitle\":\"Edit ~/.capture/config.json\",\"valid\":false}"
     echo "{\"items\":[${items}]}"
     exit 0
 fi

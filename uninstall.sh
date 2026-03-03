@@ -21,7 +21,7 @@ else
     BOLD='' DIM='' RESET='' CYAN='' GREEN='' YELLOW='' RED='' BCYAN='' BWHITE='' BRED='' BYELLOW=''
 fi
 
-CAPTURE_CONFIG_DIR="$HOME/.config/capture"
+CAPTURE_CONFIG_DIR="$HOME/.capture"
 ALFRED_WORKFLOW="$HOME/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows/user.workflow.md-note-capture"
 
 # Banner
@@ -35,11 +35,9 @@ echo -e "${BWHITE}This will remove:${RESET}"
 echo -e "  ${RED}•${RESET} ${DIM}${CAPTURE_CONFIG_DIR}/list-md-files.sh${RESET}"
 echo -e "  ${RED}•${RESET} ${DIM}${CAPTURE_CONFIG_DIR}/prepend-to-file.sh${RESET}"
 echo -e "  ${RED}•${RESET} ${DIM}${CAPTURE_CONFIG_DIR}/alfred-search.sh${RESET}"
-echo -e "  ${RED}•${RESET} ${DIM}${CAPTURE_CONFIG_DIR}/notes-dir.txt${RESET}"
-echo -e "  ${RED}•${RESET} ${DIM}${CAPTURE_CONFIG_DIR}/repos-dir.txt${RESET}"
 echo -e "  ${RED}•${RESET} ${DIM}Alfred MD Note Capture workflow${RESET}"
 echo
-echo -e "${DIM}Will NOT remove capture CLI config (client_secret.json, targets.json, etc.)${RESET}"
+echo -e "${DIM}Will NOT remove capture CLI config (client_secret.json, targets.json, config.json, etc.)${RESET}"
 echo
 
 echo -ne "Continue? (${BWHITE}y${RESET}/${BWHITE}N${RESET}): "
@@ -61,22 +59,6 @@ for script in list-md-files.sh prepend-to-file.sh alfred-search.sh; do
         echo -e "  ${DIM}─${RESET} ${DIM}${script} not found${RESET}"
     fi
 done
-
-# Remove notes-dir.txt
-if [ -f "$CAPTURE_CONFIG_DIR/notes-dir.txt" ]; then
-    rm "$CAPTURE_CONFIG_DIR/notes-dir.txt"
-    echo -e "  ${GREEN}✓${RESET} Removed ${DIM}notes-dir.txt${RESET}"
-else
-    echo -e "  ${DIM}─${RESET} ${DIM}notes-dir.txt not found${RESET}"
-fi
-
-# Remove repos-dir.txt
-if [ -f "$CAPTURE_CONFIG_DIR/repos-dir.txt" ]; then
-    rm "$CAPTURE_CONFIG_DIR/repos-dir.txt"
-    echo -e "  ${GREEN}✓${RESET} Removed ${DIM}repos-dir.txt${RESET}"
-else
-    echo -e "  ${DIM}─${RESET} ${DIM}repos-dir.txt not found${RESET}"
-fi
 
 # Remove Alfred workflow
 if [ -d "$ALFRED_WORKFLOW" ]; then
