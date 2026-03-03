@@ -72,6 +72,14 @@ else
     echo -e "    ${DIM}Edit ${CAPTURE_CONFIG_DIR}/notes-dir.txt to set your notes folder path${RESET}"
 fi
 
+if [ -f "$CAPTURE_CONFIG_DIR/repos-dir.txt" ]; then
+    echo -e "  ${GREEN}✓${RESET} Existing ${DIM}repos-dir.txt${RESET} found ${DIM}(keeping your customizations)${RESET}"
+else
+    cp "$SCRIPT_DIR/config/repos-dir.txt.example" "$CAPTURE_CONFIG_DIR/repos-dir.txt"
+    echo -e "  ${GREEN}✓${RESET} Created ${DIM}repos-dir.txt${RESET} from template"
+    echo -e "    ${DIM}Edit ${CAPTURE_CONFIG_DIR}/repos-dir.txt to set your repos folder path${RESET}"
+fi
+
 if [ -n "$ALFRED_WORKFLOWS_DIR" ]; then
     WORKFLOW_DEST="$ALFRED_WORKFLOWS_DIR/user.workflow.md-note-capture"
     mkdir -p "$WORKFLOW_DEST"
@@ -86,11 +94,10 @@ echo -e "${BGREEN}┃   Installation complete! ✓     ┃${RESET}"
 echo -e "${BGREEN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${RESET}"
 echo
 echo -e "${BWHITE}Usage:${RESET}"
-echo -e "  Type ${BCYAN}c${RESET} in Alfred to list repos and gmail"
-echo -e "  Select a repo to add a note to ${DIM}<notes-dir>/<repo>.md${RESET}"
+echo -e "  Type ${BCYAN}c${RESET} in Alfred to list notes and gmail"
+echo -e "  Select a note to add text to ${DIM}<notes-dir>/<note>.md${RESET}"
 echo -e "  Select ${BCYAN}gmail${RESET} to capture a quick idea via Gmail"
 echo
 echo -e "${BWHITE}Configuration:${RESET}"
 echo -e "  ${DIM}${CAPTURE_CONFIG_DIR}/notes-dir.txt${RESET}  Notes folder path"
-
-
+echo -e "  ${DIM}${CAPTURE_CONFIG_DIR}/repos-dir.txt${RESET}  Repos folder path (for note icons)"
