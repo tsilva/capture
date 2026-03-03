@@ -1,16 +1,30 @@
 #!/bin/bash
-# Show a text input dialog and prepend the entered text to a markdown note
+# Show a text input dialog and append the entered text to a markdown note
 # Usage: prepend-to-file.sh <note-name>
+#        prepend-to-file.sh <note-name>:::<message>  (inline mode, skips dialog)
 # Reads notes directory from ~/.capture/config.json
 # Creates <notes-dir>/<note-name>.md if it doesn't exist
 
-NOTE_NAME="$1"
-if [ -z "$NOTE_NAME" ]; then
+INPUT="$1"
+if [ -z "$INPUT" ]; then
     exit 0
 fi
 
-# Handle gmail: show dialog and run capture CLI
+# Parse inline message delimiter (target:::message)
+NOTE_NAME="$INPUT"
+INLINE_MESSAGE=""
+if [[ "$INPUT" == *":::"* ]]; then
+    NOTE_NAME="${INPUT%%:::*}"
+    INLINE_MESSAGE="${INPUT#*:::}"
+fi
+
+# Handle gmail
 if [ "$NOTE_NAME" = "gmail" ]; then
+    if [ -n "$INLINE_MESSAGE" ]; then
+        "$HOME/.local/bin/capture" home "$INLINE_MESSAGE"
+        exit 0
+    fi
+    # Legacy: show dialog
     IDEA=$(osascript -e "
         try
             set result to display dialog \"Capture idea:\" default answer \"\" buttons {\"Cancel\", \"Capture\"} default button \"Capture\" with title \"Quick Capture\"
@@ -40,28 +54,44 @@ fi
 
 FILE_PATH="$NOTES_DIR/${NOTE_NAME}.md"
 
-# Show text input dialog via osascript
-NOTE=$(osascript -e "
-    try
-        set result to display dialog \"Add note to ${NOTE_NAME}.md:\" default answer \"\" buttons {\"Cancel\", \"Add\"} default button \"Add\" with title \"Add Note\"
-        return text returned of result
-    on error
-        return \"\"
-    end try
-" 2>/dev/null)
+# Get note text: use inline message or show dialog
+if [ -n "$INLINE_MESSAGE" ]; then
+    NOTE="$INLINE_MESSAGE"
+else
+    NOTE=$(osascript -e "
+        try
+            set result to display dialog \"Add note to ${NOTE_NAME}.md:\" default answer \"\" buttons {\"Cancel\", \"Add\"} default button \"Add\" with title \"Add Note\"
+            return text returned of result
+        on error
+            return \"\"
+        end try
+    " 2>/dev/null)
+fi
 
 # Exit if cancelled or empty
 if [ -z "$NOTE" ]; then
     exit 0
 fi
 
-# Create file if it doesn't exist
+# Create file or append to existing
 if [ ! -f "$FILE_PATH" ]; then
-    printf '%s\n' "$NOTE" > "$FILE_PATH"
+    printf '#process\n\n%s\n' "$NOTE" > "$FILE_PATH"
 else
-    # Prepend text to existing file using temp file
-    TMPFILE=$(mktemp)
-    printf '%s\n\n' "$NOTE" > "$TMPFILE"
-    cat "$FILE_PATH" >> "$TMPFILE"
-    mv "$TMPFILE" "$FILE_PATH"
+    # Append text to existing file
+    printf '\n%s\n' "$NOTE" >> "$FILE_PATH"
+fi
+
+# Ensure first line contains #process tag
+FIRST_LINE=$(head -1 "$FILE_PATH")
+if ! echo "$FIRST_LINE" | grep -q '#process'; then
+    if echo "$FIRST_LINE" | grep -q '^#'; then
+        # First line has other tags, add #process to beginning
+        sed -i '' "1s/^/#process /" "$FILE_PATH"
+    else
+        # No tags on first line, insert #process + blank line
+        TMPFILE=$(mktemp)
+        printf '#process\n\n' > "$TMPFILE"
+        cat "$FILE_PATH" >> "$TMPFILE"
+        mv "$TMPFILE" "$FILE_PATH"
+    fi
 fi
