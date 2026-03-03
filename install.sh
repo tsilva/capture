@@ -59,6 +59,39 @@ cp "$SCRIPT_DIR/icons/gmail.png" "$CAPTURE_CONFIG_DIR/gmail.png"
 echo -e "  ${GREEN}✓${RESET} Installed ${DIM}gmail.png${RESET}"
 echo
 
+# Validation helpers
+validate_notes_dir() {
+    local dir="$1"
+    [ -d "$dir" ] && [ -n "$(find "$dir" -maxdepth 1 -name "*.md" -print -quit)" ]
+}
+
+validate_repos_dir() {
+    local dir="$1"
+    [ -d "$dir" ] && [ -n "$(find "$dir" -maxdepth 2 -name ".git" -print -quit)" ]
+}
+
+# Prompt helper
+prompt_path() {
+    local config_file="$1"
+    local prompt_text="$2"
+    local validate_fn="$3"
+    local err_msg="$4"
+    local input expanded
+
+    while true; do
+        printf "  %s" "$prompt_text"
+        read -r input
+        expanded="${input/#\~/$HOME}"
+        if $validate_fn "$expanded"; then
+            echo "$expanded" > "$config_file"
+            echo -e "  ${GREEN}✓${RESET} Saved to ${DIM}$(basename $config_file)${RESET}"
+            break
+        else
+            echo -e "  ${RED}✗${RESET} $err_msg"
+        fi
+    done
+}
+
 # [4/4] Handle notes-dir.txt & Alfred
 echo -e "${BWHITE}[4/4] Setting up config...${RESET}"
 if [ -f "$CAPTURE_CONFIG_DIR/notes-dir.txt" ]; then
@@ -67,17 +100,13 @@ elif [ -f "$HOME/.config/aerospace/notes-dir.txt" ]; then
     cp "$HOME/.config/aerospace/notes-dir.txt" "$CAPTURE_CONFIG_DIR/notes-dir.txt"
     echo -e "  ${GREEN}✓${RESET} Migrated ${DIM}notes-dir.txt${RESET} from ${DIM}~/.config/aerospace/${RESET}"
 else
-    cp "$SCRIPT_DIR/config/notes-dir.txt.example" "$CAPTURE_CONFIG_DIR/notes-dir.txt"
-    echo -e "  ${GREEN}✓${RESET} Created ${DIM}notes-dir.txt${RESET} from template"
-    echo -e "    ${DIM}Edit ${CAPTURE_CONFIG_DIR}/notes-dir.txt to set your notes folder path${RESET}"
+    prompt_path "$CAPTURE_CONFIG_DIR/notes-dir.txt" "Enter path to your notes directory: " "validate_notes_dir" "Directory doesn't exist or contains no .md files"
 fi
 
 if [ -f "$CAPTURE_CONFIG_DIR/repos-dir.txt" ]; then
     echo -e "  ${GREEN}✓${RESET} Existing ${DIM}repos-dir.txt${RESET} found ${DIM}(keeping your customizations)${RESET}"
 else
-    cp "$SCRIPT_DIR/config/repos-dir.txt.example" "$CAPTURE_CONFIG_DIR/repos-dir.txt"
-    echo -e "  ${GREEN}✓${RESET} Created ${DIM}repos-dir.txt${RESET} from template"
-    echo -e "    ${DIM}Edit ${CAPTURE_CONFIG_DIR}/repos-dir.txt to set your repos folder path${RESET}"
+    prompt_path "$CAPTURE_CONFIG_DIR/repos-dir.txt" "Enter path to your repos directory: " "validate_repos_dir" "Directory doesn't exist or contains no git repos"
 fi
 
 if [ -n "$ALFRED_WORKFLOWS_DIR" ]; then
