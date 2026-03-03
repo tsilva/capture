@@ -1,16 +1,16 @@
 #!/bin/bash
-# Show a text input dialog and prepend the entered text to a repo's markdown note
-# Usage: prepend-to-file.sh <repo-name>
+# Show a text input dialog and prepend the entered text to a markdown note
+# Usage: prepend-to-file.sh <note-name>
 # Reads notes directory from ~/.config/capture/notes-dir.txt
-# Creates <notes-dir>/<repo-name>.md if it doesn't exist
+# Creates <notes-dir>/<note-name>.md if it doesn't exist
 
-REPO_NAME="$1"
-if [ -z "$REPO_NAME" ]; then
+NOTE_NAME="$1"
+if [ -z "$NOTE_NAME" ]; then
     exit 0
 fi
 
 # Handle gmail: show dialog and run capture CLI
-if [ "$REPO_NAME" = "gmail" ]; then
+if [ "$NOTE_NAME" = "gmail" ]; then
     IDEA=$(osascript -e "
         try
             set result to display dialog \"Capture idea:\" default answer \"\" buttons {\"Cancel\", \"Capture\"} default button \"Capture\" with title \"Quick Capture\"
@@ -50,12 +50,12 @@ if [ -z "$NOTES_DIR" ] || [ ! -d "$NOTES_DIR" ]; then
     exit 0
 fi
 
-FILE_PATH="$NOTES_DIR/${REPO_NAME}.md"
+FILE_PATH="$NOTES_DIR/${NOTE_NAME}.md"
 
 # Show text input dialog via osascript
 NOTE=$(osascript -e "
     try
-        set result to display dialog \"Add note to ${REPO_NAME}.md:\" default answer \"\" buttons {\"Cancel\", \"Add\"} default button \"Add\" with title \"Add Note\"
+        set result to display dialog \"Add note to ${NOTE_NAME}.md:\" default answer \"\" buttons {\"Cancel\", \"Add\"} default button \"Add\" with title \"Add Note\"
         return text returned of result
     on error
         return \"\"
