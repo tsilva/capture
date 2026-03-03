@@ -78,7 +78,7 @@ prompt_path() {
     local input expanded
 
     while true; do
-        printf "  %s" "$prompt_text"
+        printf "  %s" "$prompt_text" >&2
         read -r input
         expanded="${input/#\~/$HOME}"
         if $validate_fn "$expanded"; then
@@ -94,25 +94,6 @@ prompt_path() {
 echo -e "${BWHITE}[4/4] Setting up config...${RESET}"
 if [ -f "$CAPTURE_CONFIG_DIR/config.json" ]; then
     echo -e "  ${GREEN}✓${RESET} Existing ${DIM}config.json${RESET} found ${DIM}(keeping your customizations)${RESET}"
-elif [ -f "$HOME/.config/capture/notes-dir.txt" ] || [ -f "$HOME/.config/capture/repos-dir.txt" ]; then
-    # Migrate from old config files
-    NOTES_DIR=""
-    REPOS_DIR=""
-
-    if [ -f "$HOME/.config/capture/notes-dir.txt" ]; then
-        NOTES_DIR=$(grep -v "^#" "$HOME/.config/capture/notes-dir.txt" | grep -v "^$" | head -1)
-    fi
-    if [ -f "$HOME/.config/capture/repos-dir.txt" ]; then
-        REPOS_DIR=$(grep -v "^#" "$HOME/.config/capture/repos-dir.txt" | grep -v "^$" | head -1)
-    fi
-
-    cat > "$CAPTURE_CONFIG_DIR/config.json" <<EOF
-{
-  "notes_dir": "$NOTES_DIR",
-  "repos_dir": "$REPOS_DIR"
-}
-EOF
-    echo -e "  ${GREEN}✓${RESET} Migrated config to ${DIM}config.json${RESET}"
 else
     NOTES_DIR=$(prompt_path "Enter path to your notes directory: " "validate_notes_dir" "Directory doesn't exist or contains no .md files")
     REPOS_DIR=$(prompt_path "Enter path to your repos directory: " "validate_repos_dir" "Directory doesn't exist or contains no git repos")
@@ -145,5 +126,4 @@ echo -e "  Select a note to add text to ${DIM}<notes-dir>/<note>.md${RESET}"
 echo -e "  Select ${BCYAN}gmail${RESET} to capture a quick idea via Gmail"
 echo
 echo -e "${BWHITE}Configuration:${RESET}"
-echo -e "  ${DIM}${CAPTURE_CONFIG_DIR}/notes-dir.txt${RESET}  Notes folder path"
-echo -e "  ${DIM}${CAPTURE_CONFIG_DIR}/repos-dir.txt${RESET}  Repos folder path (for note icons)"
+echo -e "  ${DIM}${CAPTURE_CONFIG_DIR}/config.json${RESET}  Notes and repos folder paths"
