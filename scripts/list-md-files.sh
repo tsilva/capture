@@ -12,8 +12,9 @@ NOTES_DIR=""
 REPOS_DIR=""
 
 if [ -f "$CONFIG_FILE" ]; then
-    NOTES_DIR=$(grep -o '"notes_dir": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
-    REPOS_DIR=$(grep -o '"repos_dir": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
+    CONFIG_CONTENT=$(<"$CONFIG_FILE")
+    [[ "$CONFIG_CONTENT" =~ \"notes_dir\":[[:space:]]*\"([^\"]+)\" ]] && NOTES_DIR="${BASH_REMATCH[1]}"
+    [[ "$CONFIG_CONTENT" =~ \"repos_dir\":[[:space:]]*\"([^\"]+)\" ]] && REPOS_DIR="${BASH_REMATCH[1]}"
 fi
 
 # JSON-escape a string (handles backslashes and double quotes)
@@ -23,6 +24,45 @@ json_escape() {
     s="${s//\"/\\\"}"
     printf '%s' "$s"
 }
+
+# --- Fast path: compose mode detection without filesystem enumeration ---
+if [[ "$QUERY" == *" "* ]]; then
+    TARGET="${QUERY%% *}"
+    MESSAGE="${QUERY:${#TARGET}+1}"
+    ICON=""
+    VALID=false
+
+    if [[ "$TARGET" == "gmail" ]]; then
+        ICON="$HOME/.capture/gmail.png"
+        VALID=true
+    elif [ -n "$NOTES_DIR" ] && [ -f "$NOTES_DIR/$TARGET.md" ]; then
+        if [[ "$TARGET" == git-* ]] && [ -n "$REPOS_DIR" ]; then
+            REPO_NAME="${TARGET#git-}"
+            [ -f "$REPOS_DIR/$REPO_NAME/logo.png" ] && ICON="$REPOS_DIR/$REPO_NAME/logo.png"
+        fi
+        VALID=true
+    elif [[ "$TARGET" == git-* ]] && [ -n "$REPOS_DIR" ]; then
+        REPO_NAME="${TARGET#git-}"
+        if [ -d "$REPOS_DIR/$REPO_NAME" ]; then
+            [ -f "$REPOS_DIR/$REPO_NAME/logo.png" ] && ICON="$REPOS_DIR/$REPO_NAME/logo.png"
+            VALID=true
+        fi
+    fi
+
+    if [ "$VALID" = true ]; then
+        escaped_target=$(json_escape "$TARGET")
+        icon_part=""
+        [ -n "$ICON" ] && icon_part=",\"icon\":{\"path\":\"$(json_escape "$ICON")\"}"
+
+        if [ -z "$MESSAGE" ]; then
+            echo "{\"items\":[{\"title\":\"Type your message...\",\"subtitle\":\"Send to ${escaped_target}\",\"valid\":false${icon_part}}]}"
+        else
+            escaped_msg=$(json_escape "$MESSAGE")
+            echo "{\"items\":[{\"title\":\"${escaped_msg}\",\"subtitle\":\"Send to ${escaped_target}\",\"arg\":\"${escaped_target}:::${escaped_msg}\"${icon_part}}]}"
+        fi
+        exit 0
+    fi
+fi
 
 # --- Collect targets as pipe-delimited: name|subtitle|icon_path ---
 TARGETS=()
