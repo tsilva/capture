@@ -58,7 +58,7 @@
 				<key>runningsubtext</key>
 				<string>Loading markdown files...</string>
 				<key>script</key>
-				<string>/bin/bash __HOME__/.config/capture/list-md-files.sh</string>
+				<string>/bin/bash __HOME__/.capture/list-md-files.sh</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -87,7 +87,7 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>script</key>
-				<string>/bin/bash __HOME__/.config/capture/prepend-to-file.sh "{query}"</string>
+				<string>/bin/bash __HOME__/.capture/prepend-to-file.sh "{query}"</string>
 				<key>scriptargtype</key>
 				<integer>0</integer>
 				<key>scriptfile</key>
