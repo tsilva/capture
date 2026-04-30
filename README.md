@@ -10,6 +10,8 @@ The repo also includes an Alfred workflow for macOS note capture. The workflow c
 
 ## Install
 
+Requires Python 3.10 or newer.
+
 ```bash
 uv tool install git+https://github.com/tsilva/capture.git
 ```
