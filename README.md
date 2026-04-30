@@ -1,80 +1,20 @@
 <div align="center">
-  <img src="logo.png" alt="capture" width="512"/>
+  <img src="https://raw.githubusercontent.com/tsilva/capture/main/logo.png" alt="capture" width="512" />
 
-  # capture
-
-  [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
-  [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-  [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)](https://github.com/tsilva/capture)
-
-  **🧠 Clear your mind instantly — capture thoughts to Gmail with a single command ⚡**
-
-  [Quick Start](#quick-start) · [Installation](#installation) · [Configuration](#configuration)
+  **🧠 Capture thoughts to Gmail before they become distractions ⚡**
 </div>
 
----
+capture is a small Python CLI for sending quick thoughts, reminders, and tasks to Gmail. It follows the Getting Things Done habit of getting ideas out of your head quickly so they can be processed later.
 
-## Overview
+The repo also includes an Alfred workflow for macOS note capture. The workflow can append text to markdown notes or route a `gmail` target through the `capture` command.
 
-[![CI](https://github.com/tsilva/capture/actions/workflows/release.yml/badge.svg)](https://github.com/tsilva/capture/actions/workflows/release.yml)
-
-Capture implements the **Getting Things Done (GTD)** methodology by letting you dump thoughts, tasks, and ideas from your mind into Gmail instantly. Stop letting random thoughts interrupt your focus — capture them in seconds and process them later.
-
-## Features
-
-- **⚡ Instant capture** — Send notes to Gmail in under 2 seconds
-- **🎯 Multiple targets** — Route messages to different inboxes (home, work, etc.)
-- **🔒 Secure OAuth2** — Gmail API authentication, no passwords stored
-- **💻 Cross-platform** — Works on macOS, Linux, and Windows
-- **📝 Alfred workflow** — Add notes to markdown files and capture ideas with `c` keyword
-- **⌨️ Hotkey ready** — AutoHotkey (Windows) and Alfred (macOS) integration included
-
-## Quick Start
+## Install
 
 ```bash
-# Install
 uv tool install git+https://github.com/tsilva/capture.git
-
-# Capture a thought
-capture home "Buy groceries after work"
 ```
 
-## Installation
-
-### Prerequisites
-
-- Python 3.8+
-- [uv](https://docs.astral.sh/uv/getting-started/installation/) package manager
-- Google Cloud project with Gmail API enabled
-
-### Install
-
-| Method | Command |
-|--------|---------|
-| From GitHub | `uv tool install git+https://github.com/tsilva/capture.git` |
-| Local clone | `git clone https://github.com/tsilva/capture.git && cd capture && uv tool install .` |
-
-### Gmail API Setup
-
-1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
-2. Enable the **Gmail API**
-3. Go to **Credentials** → **Create Credentials** → **OAuth 2.0 Client ID**
-4. Select **Desktop app** as application type
-5. Download and save as `client_secret.json` in your [config directory](#config-directory)
-
-## Configuration
-
-### Config Directory
-
-| Platform | Location |
-|----------|----------|
-| macOS / Linux / Windows | `~/.capture/` |
-
-### Required Files
-
-**client_secret.json** — OAuth credentials from Google Cloud Console
-
-**targets.json** — Email routing configuration:
+Create `~/.capture/client_secret.json` from a Google Cloud desktop OAuth client with the Gmail API enabled, then create `~/.capture/targets.json`:
 
 ```json
 {
@@ -84,102 +24,60 @@ capture home "Buy groceries after work"
   },
   "work": {
     "from": "you@gmail.com",
-    "to": "work@company.com"
+    "to": "work@example.com"
   }
 }
 ```
 
-## Usage
+Send a thought:
 
 ```bash
-capture <target> <message>
+capture home "Buy groceries after work"
 ```
 
-| Argument | Description |
-|----------|-------------|
-| `target` | Key from `targets.json` (e.g., `home`, `work`) |
-| `message` | The thought or note to capture |
+On first use, the CLI opens a browser OAuth flow and stores Gmail tokens in `~/.capture/token.json`.
 
-### Examples
+## Local Setup
 
 ```bash
-# Personal reminder
-capture home "Call dentist to schedule appointment"
-
-# Work task
-capture work "Review PR #42 before standup"
-
-# Quick idea
-capture home "Blog post idea: productivity tips for developers"
+git clone https://github.com/tsilva/capture.git
+cd capture
+uv tool install .
+capture home "Test capture from a local install"
 ```
 
-## Alfred Integration (macOS)
-
-### MD Note Capture
-
-An Alfred workflow for adding notes to markdown files and quick idea capture.
+To install the Alfred workflow and helper scripts:
 
 ```bash
-# Install the workflow and helper scripts
 ./install.sh
 ```
 
-Type `c` in Alfred to:
-- Select a note file to append text to `<notes_dir>/<note-name>.md`
-- Select `gmail` to capture a quick idea via Gmail
+The installer copies helper scripts into `~/.capture/`, installs the Alfred workflow when Alfred is present, and creates `~/.capture/config.json` interactively when it does not already exist.
 
-#### Configuration
+## Commands
 
-Configuration is handled by `~/.capture/config.json`, which is created interactively during `./install.sh`:
-
-```json
-{
-  "notes_dir": "~/Documents/Notes",
-  "repos_dir": "~/repos"
-}
+```bash
+capture <target> <message>                 # send a Gmail message through a target in targets.json
+./install.sh                               # install Alfred workflow helpers
+./uninstall.sh                             # remove Alfred workflow helpers, keeping CLI config
+uv tool uninstall capture-cli              # uninstall the CLI
 ```
 
-**notes_dir** — Directory where markdown notes are stored (must contain `.md` files)
-**repos_dir** — Directory containing git repositories (used for note icons)
+## Notes
 
-#### Window Management with AeroSpace
+- Runtime config lives in `~/.capture/` on every platform.
+- `client_secret.json` and `targets.json` are required before the CLI can send mail.
+- `config.json` is used by the Alfred workflow and stores `notes_dir` and `repos_dir`.
+- The CLI uses the Gmail compose scope and sends each captured message as both the email subject and body.
+- Alfred uses the `c` keyword to list markdown note targets and the special `gmail` target.
+- Markdown note capture appends text to `<notes_dir>/<note-name>.md`; new notes start with `#process`.
+- Files named `git-<repo>.md` can use `<repos_dir>/<repo>/logo.png` as their Alfred icon.
+- The included AutoHotkey example can bind quick capture on Windows after the CLI is installed.
 
-For the best experience, use [aerospace-setup](https://github.com/tsilva/aerospace-setup) to manage your windows. It includes:
-- Automatic workspace organization for Cursor projects
-- `alt+p` to switch between projects
-- `alt+s` to organize windows by priority
-- Optional `alt+c` keybinding for instant capture (auto-detected during install)
+## Architecture
 
-## Hotkey Integration
-
-### AutoHotkey (Windows)
-
-1. Install [AutoHotkey](https://www.autohotkey.com/)
-2. Copy `autohotkey/capture-home.ahk.example` to `capture-home.ahk`
-3. Edit the target if needed and run the script
-4. Press **F1** to capture thoughts instantly
-
-## Troubleshooting
-
-### First Run Authentication
-
-On first use, a browser window opens for Gmail authorization. Grant access to allow capture to send emails on your behalf.
-
-### Missing Config Files
-
-If you see "Missing required configuration files":
-
-1. Ensure `client_secret.json` exists in your config directory
-2. Create `targets.json` with at least one target defined
-3. Run `capture` again to authenticate
-
----
-
-<p align="center">
-  Built with Python and Gmail API
-</p>
-
+![capture architecture diagram](./architecture.png)
 
 ## License
 
-MIT
+[MIT](LICENSE)
