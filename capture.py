@@ -2,19 +2,17 @@
 
 """Command line entry point for quickly sending Gmail messages."""
 
+import base64
+import json
 import os
 import sys
-import json
-import base64
-from pathlib import Path
-
 from email.mime.text import MIMEText
+from pathlib import Path
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-
 
 # Use ~/.capture for all config and cache files
 CONFIG_DIR = Path.home() / ".capture"
@@ -59,9 +57,9 @@ def _ensure_config_files():
         for f in missing_files:
             print(f"  - {f}")
         print("\nPlease create these files:")
-        print(f"1. Get client_secret.json from Google Cloud Console")
-        print(f"   (Enable Gmail API and create OAuth 2.0 credentials)")
-        print(f"2. Create targets.json with email mappings:")
+        print("1. Get client_secret.json from Google Cloud Console")
+        print("   (Enable Gmail API and create OAuth 2.0 credentials)")
+        print("2. Create targets.json with email mappings:")
         print('   {"home": {"from": "your@gmail.com", "to": "your@gmail.com"}}')
         print(f"\nConfig directory: {CONFIG_DIR}")
         return False
