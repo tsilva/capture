@@ -52,3 +52,5 @@ logs/
 client_secret.json
 gmail.storage
 targets.json
+image-assets/previews/
+image-assets/sources/*-keyed.png
