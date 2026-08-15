@@ -34,3 +34,9 @@ constraint-dependencies = [
   "mistralai!=2.4.6",
   "guardrails-ai!=0.10.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.0",
+    "ruff>=0.14.0",
+]

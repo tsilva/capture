@@ -54,6 +54,15 @@ To install the Alfred workflow and helper scripts:
 ./install.sh
 ```
 
+Run the locked validation suite before contributing:
+
+```bash
+uv sync --frozen --all-groups
+uv run --frozen ruff check .
+uv run --frozen pytest -q
+uv build
+```
+
 The installer copies helper scripts into `~/.capture/`, installs the Alfred workflow when Alfred is present, and creates `~/.capture/config.json` interactively when it does not already exist.
 
 ## Commands
