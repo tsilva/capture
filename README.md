@@ -1,8 +1,10 @@
-<div align="center">
+<p align="center">
   <img src="https://raw.githubusercontent.com/tsilva/capture/main/logo.png" alt="capture" width="512" />
-
-  **🧠 Capture thoughts to Gmail before they become distractions ⚡**
-</div>
+  <br />
+  <!-- repo-tagline:start -->
+  <strong>🧠 Capture thoughts to Gmail before they become distractions ⚡</strong>
+  <!-- repo-tagline:end -->
+</p>
 
 capture is a small Python CLI for sending quick thoughts, reminders, and tasks to Gmail. It follows the Getting Things Done habit of getting ideas out of your head quickly so they can be processed later.
 
