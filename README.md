@@ -78,6 +78,7 @@ uv tool uninstall capture-cli              # uninstall the CLI
 
 ## Notes
 
+- The locked Certifi certificate bundle excludes the compromised emSign roots; frozen installs retain this reviewed trust store.
 - Runtime config lives in `~/.capture/` on every platform.
 - `client_secret.json` and `targets.json` are required before the CLI can send mail.
 - `config.json` is used by the Alfred workflow and stores `notes_dir` and `repos_dir`.
