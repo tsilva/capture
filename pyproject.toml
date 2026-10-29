@@ -33,3 +33,10 @@ dev = [
     "pytest>=9.0.0",
     "ruff>=0.14.0",
 ]
+
+# Constraints are project metadata; uv does not read them from uv.toml.
+[tool.uv]
+constraint-dependencies = [
+    "mistralai!=2.4.6",
+    "guardrails-ai!=0.10.1",
+]

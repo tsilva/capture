@@ -12,6 +12,10 @@ The repo also includes an Alfred workflow for macOS note capture. The workflow c
 
 ## Install
 
+Dependency resolution keeps the seven-day release-age setting in `uv.toml` and
+the security constraints in `[tool.uv]` in `pyproject.toml`. Keep both files with
+the committed `uv.lock` when updating dependencies.
+
 Requires Python 3.10 or newer.
 
 ```bash
